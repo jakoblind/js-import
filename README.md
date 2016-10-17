@@ -1,5 +1,5 @@
 # js-import
-Import Javascript files from the current project or dependencies.
+Emacs package to automatically import JavaScript files from the current project or dependencies.
 
 ![Emacs js-import](https://jakoblind.github.io/img/emacs-import.gif)
 
