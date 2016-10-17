@@ -29,27 +29,27 @@
 (require 'subr-x)
 (require 'projectile)
 
-(defun jsi/get-project-dependencies ()
+(defun js-import-get-project-dependencies ()
   "Get dependencies section in package.json for the current Projectile project"
   (let ((json-object-type 'hash-table))
     (hash-table-keys
      (gethash "dependencies"
               (json-read-from-string (f-read-text (concat (projectile-project-root) "package.json") 'utf-8))))))
 
-(defun jsi/string-ends-with-p (string suffix)
+(defun js-import-string-ends-with-p (string suffix)
   "Return t if STRING ends with SUFFIX."
   (and (string-match (rx-to-string `(: ,suffix eos) t)
                      string)
        t))
 
-(defun jsi/is-js-file (file)
-  (or (jsi/string-ends-with-p file ".js") (jsi/string-ends-with-p file ".jsx")))
+(defun js-import/is-js-file (file)
+  (or (js-import/string-ends-with-p file ".js") (js-import/string-ends-with-p file ".jsx")))
 
 (defun js-import ()
   (interactive)
   (let* ((filtered-project-files
-          (-filter 'jsi/is-js-file (projectile-current-project-files)))
-         (all (append (jsi/get-project-dependencies) filtered-project-files))
+          (-filter 'js-import/is-js-file (projectile-current-project-files)))
+         (all (append (js-import/get-project-dependencies) filtered-project-files))
          (selected-file (ido-completing-read "Select a file to import: " all))
          (selected-file-name (f-filename (f-no-ext selected-file)))
          (selected-file-relative-path
@@ -60,7 +60,7 @@
              "import "
              selected-file-name
              " from \""
-             (if (jsi/is-js-file selected-file) (concat "./" selected-file-relative-path) selected-file-name)
+             (if (js-import/is-js-file selected-file) (concat "./" selected-file-relative-path) selected-file-name)
              "\";"))))
 
 
