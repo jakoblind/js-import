@@ -3,6 +3,9 @@
 ;; Copyright (C) 2016  Jakob Lind
 
 ;; Author: Jakob Lind <karl.jakob.lind@gmail.com>
+;; URL: https://github.com/jakoblind/js-import
+;; Package-Requires: ((emacs "24.4") (f "20160815.1253") (projectile "20160830.138") (dash "20160820.501"))
+;; Version: 1.0
 ;; Keywords: tools
 
 ;; This program is free software; you can redistribute it and/or modify
