@@ -45,15 +45,15 @@
                      string)
        t))
 
-(defun js-import/is-js-file (file)
-  (or (js-import/string-ends-with-p file ".js") (js-import/string-ends-with-p file ".jsx")))
+(defun js-import-is-js-file (file)
+  (or (js-import-string-ends-with-p file ".js") (js-import-string-ends-with-p file ".jsx")))
 
 ;;;###autoload
 (defun js-import ()
   (interactive)
   (let* ((filtered-project-files
-          (-filter 'js-import/is-js-file (projectile-current-project-files)))
-         (all (append (js-import/get-project-dependencies) filtered-project-files))
+          (-filter 'js-import-is-js-file (projectile-current-project-files)))
+         (all (append (js-import-get-project-dependencies) filtered-project-files))
          (selected-file (ido-completing-read "Select a file to import: " all))
          (selected-file-name (f-filename (f-no-ext selected-file)))
          (selected-file-relative-path
@@ -64,7 +64,7 @@
              "import "
              selected-file-name
              " from \""
-             (if (js-import/is-js-file selected-file) (concat "./" selected-file-relative-path) selected-file-name)
+             (if (js-import-is-js-file selected-file) (concat "./" selected-file-relative-path) selected-file-name)
              "\";"))))
 
 (provide 'js-import)
