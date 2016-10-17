@@ -48,6 +48,7 @@
 (defun js-import/is-js-file (file)
   (or (js-import/string-ends-with-p file ".js") (js-import/string-ends-with-p file ".jsx")))
 
+;;;###autoload
 (defun js-import ()
   (interactive)
   (let* ((filtered-project-files
@@ -65,7 +66,6 @@
              " from \""
              (if (js-import/is-js-file selected-file) (concat "./" selected-file-relative-path) selected-file-name)
              "\";"))))
-
 
 (provide 'js-import)
 ;;; js-import.el ends here
