@@ -33,7 +33,7 @@
 (require 'projectile)
 
 (defun js-import-get-project-dependencies ()
-  "Get dependencies section in package.json for the current Projectile project"
+  "Get dependencies section in package.json for the current Projectile project."
   (let ((json-object-type 'hash-table))
     (hash-table-keys
      (gethash "dependencies"
@@ -45,11 +45,13 @@
                      string)
        t))
 
-(defun js-import-is-js-file (file)
-  (or (js-import-string-ends-with-p file ".js") (js-import-string-ends-with-p file ".jsx")))
+(defun js-import-is-js-file (filename)
+  "Check if FILENAME ends with either .js or .jsx."
+  (or (js-import-string-ends-with-p filename ".js") (js-import-string-ends-with-p filename ".jsx")))
 
 ;;;###autoload
 (defun js-import ()
+  "Import Javascript files from your current project or dependencies."
   (interactive)
   (let* ((filtered-project-files
           (-filter 'js-import-is-js-file (projectile-current-project-files)))
