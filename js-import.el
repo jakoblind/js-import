@@ -4,7 +4,7 @@
 
 ;; Author: Jakob Lind <karl.jakob.lind@gmail.com>
 ;; URL: https://github.com/jakoblind/js-import
-;; Package-Requires: ((emacs "24.4") (f "20160815.1253") (projectile "20160830.138") (dash "20160820.501"))
+;; Package-Requires: ((emacs "24.4") (f "0.19.0") (projectile "0.14.0") (dash "2.13.0"))
 ;; Version: 1.0
 ;; Keywords: tools
 
