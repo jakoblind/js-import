@@ -1,0 +1,15 @@
+{
+  "name": "emptynpm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "react": "0.14.8",
+    "redux": "3.6.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
