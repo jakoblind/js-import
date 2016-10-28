@@ -36,11 +36,11 @@
   "Return the path to package.json from projectile-project-root"
   (concat (projectile-project-root) "package.json"))
 
-(defun js-import-get-project-dependencies (package-json-path dependencies)
-  "Return a list of strings with dependencies fetched from package.json in PACKAGE-JSON-PATH. If file not found, return nil"
+(defun js-import-get-project-dependencies (package-json-path section)
+  "Return a list of strings with dependencies fetched from PACKAGE-JSON-PATH in SECTION. If file not found, return nil"
   (let ((json-object-type 'hash-table))
     (when-let ((package-json-content (condition-case nil (f-read-text package-json-path 'utf-8) (error nil)))
-               (dependencies-hash (condition-case nil (gethash dependencies (json-read-from-string package-json-content)) (error nil))))
+               (dependencies-hash (condition-case nil (gethash section (json-read-from-string package-json-content)) (error nil))))
       (when dependencies-hash
         (hash-table-keys dependencies-hash)))))
 
@@ -54,13 +54,11 @@
   "Check if FILENAME ends with either .js or .jsx."
   (or (js-import-string-ends-with-p filename ".js") (js-import-string-ends-with-p filename ".jsx")))
 
-;;;###autoload
-(defun js-import ()
-  "Import Javascript files from your current project or dependencies."
-  (interactive)
+(defun js-import-from-section (section)
+  "Import Javascript files from your current project or dependencies from package.json in section SECTION."
   (let* ((filtered-project-files
           (-filter 'js-import-is-js-file (projectile-current-project-files)))
-         (all (append (js-import-get-project-dependencies (js-import-get-package-json) "dependencies") filtered-project-files))
+         (all (append (js-import-get-project-dependencies (js-import-get-package-json) section) filtered-project-files))
          (selected-file (ido-completing-read "Select a file to import: " all))
          (selected-file-name (f-filename (f-no-ext selected-file)))
          (selected-file-relative-path
@@ -73,6 +71,18 @@
              " from \""
              (if (js-import-is-js-file selected-file) (concat "./" selected-file-relative-path) selected-file-name)
              "\";"))))
+
+;;;###autoload
+(defun js-import ()
+  "Import Javascript files from your current project or dependencies."
+  (interactive)
+  (js-import-from-section "dependencies"))
+
+;;;###autoload
+(defun js-import-dev ()
+  "Import Javascript files from your current project or devDependencies."
+  (interactive)
+  (js-import-from-section "devDependencies"))
 
 (provide 'js-import)
 ;;; js-import.el ends here
