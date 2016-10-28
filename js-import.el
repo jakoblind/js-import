@@ -44,8 +44,6 @@
       (when dependencies-hash
         (hash-table-keys dependencies-hash)))))
 
-(js-import-get-project-dependencies)
-
 (defun js-import-string-ends-with-p (string suffix)
   "Return t if STRING ends with SUFFIX."
   (and (string-match (rx-to-string `(: ,suffix eos) t)
