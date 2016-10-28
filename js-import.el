@@ -36,11 +36,11 @@
   "Return the path to package.json from projectile-project-root"
   (concat (projectile-project-root) "package.json"))
 
-(defun js-import-get-project-dependencies (package-json-path)
+(defun js-import-get-project-dependencies (package-json-path dependencies)
   "Return a list of strings with dependencies fetched from package.json in PACKAGE-JSON-PATH. If file not found, return nil"
   (let ((json-object-type 'hash-table))
     (when-let ((package-json-content (condition-case nil (f-read-text package-json-path 'utf-8) (error nil)))
-               (dependencies-hash (condition-case nil (gethash "dependencies" (json-read-from-string package-json-content)) (error nil))))
+               (dependencies-hash (condition-case nil (gethash dependencies (json-read-from-string package-json-content)) (error nil))))
       (when dependencies-hash
         (hash-table-keys dependencies-hash)))))
 
@@ -60,7 +60,7 @@
   (interactive)
   (let* ((filtered-project-files
           (-filter 'js-import-is-js-file (projectile-current-project-files)))
-         (all (append (js-import-get-project-dependencies (js-import-get-package-json)) filtered-project-files))
+         (all (append (js-import-get-project-dependencies (js-import-get-package-json) "dependencies") filtered-project-files))
          (selected-file (ido-completing-read "Select a file to import: " all))
          (selected-file-name (f-filename (f-no-ext selected-file)))
          (selected-file-relative-path

@@ -29,8 +29,9 @@
 
 (ert-deftest load-package-json ()
   "Test loading of package-json file"
-  (should (equal (js-import-get-project-dependencies "not-exist") nil))
-  (should (equal (js-import-get-project-dependencies "./package.json.empty.dependencies") nil))
-  (should (equal (js-import-get-project-dependencies "package.json") '("redux" "react"))))
+  (should (equal (js-import-get-project-dependencies "not-exist" "dependencies") nil))
+  (should (equal (js-import-get-project-dependencies "./package.json.empty.dependencies" "dependencies") nil))
+  (should (equal (js-import-get-project-dependencies "package.json" "dependencies") '("redux" "react")))
+  (should (equal (js-import-get-project-dependencies "./package.json.devdependencies" "devDependencies") '("react-hot-loader" "sinon"))))
 
 ;;; js-import-test.el ends here
