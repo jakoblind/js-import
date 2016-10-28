@@ -18,4 +18,10 @@ M-x package-install js-import
 M-x js-import
 ```
 
+If you need a package defined in `devDependecies` section you can use:
+
+```
+M-x js-import-dev
+```
+
 [Blogpost](https://jakoblind.github.io/emacs/javascript/2016/10/16/automatically-import-js-files-from-you-project.html)
