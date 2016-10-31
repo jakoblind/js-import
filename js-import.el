@@ -59,7 +59,7 @@
   (let* ((filtered-project-files
           (-filter 'js-import-is-js-file (projectile-current-project-files)))
          (all (append (js-import-get-project-dependencies (js-import-get-package-json) section) filtered-project-files))
-         (selected-file (ido-completing-read "Select a file to import: " all))
+         (selected-file (completing-read "Select a file to import: " all))
          (selected-file-name (f-filename (f-no-ext selected-file)))
          (selected-file-relative-path
           (f-relative
