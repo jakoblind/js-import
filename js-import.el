@@ -87,7 +87,7 @@
                symbols
                " from "
                js-import-quote
-               (if (js-import-is-js-file selected-file) (concat selected-file-relative-path) selected-file-name)
+               (if (js-import-is-js-file selected-file) (replace-regexp-in-string "^\\([^\\.]\\)" "./\\1" selected-file-relative-path) selected-file-name)
                js-import-quote
                ";")))))
 
