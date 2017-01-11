@@ -71,11 +71,11 @@
             (f-relative
              (concat (projectile-project-root) (f-no-ext selected-file))
              (file-name-directory (buffer-file-name))))
-           (w (or (word-at-point) selected-file-name))
+           (proposed-symbol (or (word-at-point) selected-file-name))
            (read-symbols
-            (read-string (format "Symbols (default: %s): " w) nil nil w))
+            (read-string (format "Symbols (default: %s): " proposed-symbol) nil nil proposed-symbol))
            (symbols (if (string-match-p "^[^*]* " read-symbols)
-                        (concat "{ " (replace-regexp-in-string " " ", " read-symbols) " }")
+                        (concat "{ " read-symbols " }")
                       read-symbols)))
 
       (if (re-search-backward "^import " nil t)
