@@ -71,7 +71,8 @@
             (f-relative
              (concat (projectile-project-root) (f-no-ext selected-file))
              (file-name-directory (buffer-file-name))))
-           (proposed-symbol (or (word-at-point) selected-file-name))
+           (sap (symbol-at-point))
+           (proposed-symbol (or (and sap (symbol-name sap)) selected-file-name))
            (read-symbols
             (read-string (format "Symbols (default: %s): " proposed-symbol) nil nil proposed-symbol))
            (symbols (if (string-match-p "^[^*]* " read-symbols)
