@@ -3,7 +3,7 @@ Emacs package to automatically import JavaScript files from the current project 
 
 ![Emacs js-import](https://jakoblind.github.io/img/emacs-import.gif)
 
-Select any JavaScript file from your project or dependency from package.json and automatically generate an import statment at the point of the cursor.
+Select any JavaScript file from your project or dependency from package.json and automatically generate an import statement.
 
 ## Installation
 It's available on [MELPA](https://melpa.org/)
