@@ -12,6 +12,8 @@ It's available on [MELPA](https://melpa.org/)
 M-x package-install js-import
 ```
 
+Use [ido-ubiquitous](https://github.com/DarwinAwardWinner/ido-ubiquitous) to enable IDO
+
 ## Usage
 
 ```
