@@ -32,6 +32,12 @@
 (require 'subr-x)
 (require 'projectile)
 
+(defcustom js-import-quote "\""
+  "Quote type used"
+  :group 'js-import
+  :type '(choice (const :tag "Double" "\"")
+                 (const :tag "Single" "'")))
+
 (defun js-import-get-package-json ()
   "Return the path to package.json from projectile-project-root"
   (concat (projectile-project-root) "package.json"))
@@ -56,21 +62,35 @@
 
 (defun js-import-from-section (section)
   "Import Javascript files from your current project or dependencies from package.json in section SECTION."
-  (let* ((filtered-project-files
-          (-filter 'js-import-is-js-file (projectile-current-project-files)))
-         (all (append (js-import-get-project-dependencies (js-import-get-package-json) section) filtered-project-files))
-         (selected-file (ido-completing-read "Select a file to import: " all))
-         (selected-file-name (f-filename (f-no-ext selected-file)))
-         (selected-file-relative-path
-          (f-relative
-           (concat (projectile-project-root) (f-no-ext selected-file))
-           (file-name-directory (buffer-file-name)))))
-    (insert (concat
-             "import "
-             selected-file-name
-             " from \""
-             (if (js-import-is-js-file selected-file) (concat "./" selected-file-relative-path) selected-file-name)
-             "\";"))))
+  (save-excursion
+    (let* ((filtered-project-files (-filter 'js-import-is-js-file (projectile-current-project-files)))
+           (all (append (js-import-get-project-dependencies (js-import-get-package-json) section) filtered-project-files))
+           (selected-file (completing-read "Select a file to import: " all))
+           (selected-file-name (f-filename (f-no-ext selected-file)))
+           (selected-file-relative-path
+            (f-relative
+             (concat (projectile-project-root) (f-no-ext selected-file))
+             (file-name-directory (buffer-file-name))))
+           (sap (symbol-at-point))
+           (proposed-symbol (or (and sap (symbol-name sap)) selected-file-name))
+           (read-symbols
+            (read-string (format "Symbols (default: %s): " proposed-symbol) nil nil proposed-symbol))
+           (symbols (if (string-match-p "^[^*]* " read-symbols)
+                        (concat "{ " read-symbols " }")
+                      read-symbols)))
+
+      (if (re-search-backward "^import " nil t)
+          (progn (end-of-line) (newline))
+        (goto-char (point-min)) (split-line))
+
+      (insert (concat
+               "import "
+               symbols
+               " from "
+               js-import-quote
+               (if (js-import-is-js-file selected-file) (replace-regexp-in-string "^\\([^\\.]\\)" "./\\1" selected-file-relative-path) selected-file-name)
+               js-import-quote
+               ";")))))
 
 ;;;###autoload
 (defun js-import ()
