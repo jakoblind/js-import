@@ -33,17 +33,17 @@
 (require 'projectile)
 
 (defcustom js-import-quote "\""
-  "Quote type used"
+  "Quote type used."
   :group 'js-import
   :type '(choice (const :tag "Double" "\"")
                  (const :tag "Single" "'")))
 
 (defun js-import-get-package-json ()
-  "Return the path to package.json from projectile-project-root"
+  "Return the path to package.json from projectile-project-root."
   (concat (projectile-project-root) "package.json"))
 
 (defun js-import-get-project-dependencies (package-json-path section)
-  "Return a list of strings with dependencies fetched from PACKAGE-JSON-PATH in SECTION. If file not found, return nil"
+  "Return a list of strings with dependencies fetched from PACKAGE-JSON-PATH in SECTION.  If file not found, return nil."
   (let ((json-object-type 'hash-table))
     (when-let ((package-json-content (condition-case nil (f-read-text package-json-path 'utf-8) (error nil)))
                (dependencies-hash (condition-case nil (gethash section (json-read-from-string package-json-content)) (error nil))))
