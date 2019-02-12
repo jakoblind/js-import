@@ -69,7 +69,8 @@
 			 nil nil proposed-symbol))
 		   (symbols (string-trim read-symbols)))
 	  (goto-char (point-min))
-	  (while (re-search-forward "\\(^\\| +\\)from\\b" nil t)
+	  (while (re-search-forward "\\(^\\| +\\)import[ \t\n]+" nil t)
+		(re-search-forward "['\"]" nil t 2)
 		(forward-line 1))
 	  (if (eq arg 16)
           (insert "import * as " symbols
