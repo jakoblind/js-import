@@ -50,62 +50,85 @@
       (when dependencies-hash
         (hash-table-keys dependencies-hash)))))
 
-(defun js-import-string-ends-with-p (string suffix)
-  "Return t if STRING ends with SUFFIX."
-  (and (string-match (rx-to-string `(: ,suffix eos) t)
-                     string)
-       t))
-
 (defun js-import-is-js-file (filename)
   "Check if FILENAME ends with either .js or .jsx."
-  (or (js-import-string-ends-with-p filename ".js") (js-import-string-ends-with-p filename ".jsx")))
+  (or (string-suffix-p ".js" filename t) (string-suffix-p ".jsx" filename t)))
 
-(defun js-import-from-section (section)
-  "Import Javascript files from your current project or dependencies from package.json in section SECTION."
+(defun js-import-from-path (path arg)
+  "Import symbols from module."
   (save-excursion
-    (let* ((filtered-project-files (-filter 'js-import-is-js-file (projectile-current-project-files)))
-           (all (append (js-import-get-project-dependencies (js-import-get-package-json) section) filtered-project-files))
-           (selected-file (completing-read "Select a file to import: " all))
-           (selected-file-name (f-filename (f-no-ext selected-file)))
-           (selected-file-relative-path
-            (f-relative
-             (concat (projectile-project-root) (f-no-ext selected-file))
-             (file-name-directory (buffer-file-name))))
-           (sap (symbol-at-point))
-           (proposed-symbol (or (and sap (symbol-name sap)) selected-file-name))
+    (let* ((proposed-symbol (or (thing-at-point 'symbol) (f-base path)))
            (read-symbols
-            (read-string (format "Symbols (default: %s): " proposed-symbol) nil nil proposed-symbol))
-           (symbols (if (string-match-p "^[^*]* " read-symbols)
-                        (concat "{ " read-symbols " }")
-                      read-symbols)))
+            (read-string
+			 (format
+			  (pcase arg
+				(1 "Import default as (default: %s): ")
+				(4 "Symbols to import (default: %s): ")
+				(16 "Import all exports as (default: %s): "))
+			  proposed-symbol)
+			 nil nil proposed-symbol))
+		   (symbols (string-trim read-symbols)))
+	  (goto-char (point-min))
+	  (while (re-search-forward "\\(^\\| +\\)import[ \t\n]+" nil t)
+		(re-search-forward "['\"]" nil t 2)
+		(forward-line 1))
+	  (if (eq arg 16)
+          (insert "import * as " symbols
+                  " from " js-import-quote path js-import-quote ";\n")
+        (if (not (re-search-backward (concat "from +['\"]" path "['\"]") nil t))
+            (insert "import "
+                    (pcase arg
+                      (1 symbols)
+                      (4 (concat "{ " symbols " }") ))
+                    " from " js-import-quote path js-import-quote ";\n")
+          (if (eq arg 4)
+              (if (not (search-backward "}" (save-excursion (search-backward "import")) t))
+				  (insert ", { " symbols " } " )
+				(skip-chars-backward " \t\n")
+				(insert ", " symbols " "))
+			(search-backward "import")
+			(if (looking-at-p "import\\(\n\\|\\s-\\)+\\w") ;; default symbol already imported
+				(progn
+				  (open-line 1)
+				  (insert "import "
+						  symbols
+						  " from " js-import-quote path js-import-quote ";"))
+			  (forward-word)
+			  (insert " " symbols ","))))))))
 
-      (if (re-search-backward "^import " nil t)
-          (progn (end-of-line) (newline))
-        (goto-char (point-min)) (split-line))
-
-      (insert (concat
-               "import "
-               symbols
-               " from "
-               js-import-quote
-               (if (js-import-is-js-file selected-file)
-				           (replace-regexp-in-string "/index$" ""
-					             (replace-regexp-in-string "^\\([^\\.]\\)" "./\\1" selected-file-relative-path))
-				         selected-file-name)
-               js-import-quote
-               ";")))))
+(defun js-import-select-path (section)
+  "Select path from modules in project or package.json SECTION."
+  (let ((path (completing-read
+			   "Select module: "
+			   (append
+				(js-import-get-project-dependencies (js-import-get-package-json) section)
+				(-filter 'js-import-is-js-file (projectile-current-project-files))))))
+	(when (js-import-is-js-file path)
+	  (setq path (f-relative
+				  (concat (projectile-project-root) (f-no-ext path))
+				  default-directory))
+	  (setq path (replace-regexp-in-string "/index$" "" path))
+	  (when (not (string-prefix-p "." path))
+		(setq path (concat "./" path))))
+	path))
 
 ;;;###autoload
-(defun js-import ()
-  "Import Javascript files from your current project or dependencies."
-  (interactive)
-  (js-import-from-section "dependencies"))
+(defun js-import (arg)
+  "Import default export from modules on your current project or dependencies.
+
+With one prefix argument, import exported symbols.
+With two prefix arguments, import all exports as a symbol."
+  (interactive "p")
+  (js-import-from-path (js-import-select-path "dependencies") arg))
 
 ;;;###autoload
-(defun js-import-dev ()
-  "Import Javascript files from your current project or devDependencies."
-  (interactive)
-  (js-import-from-section "devDependencies"))
+(defun js-import-dev (arg)
+  "Import default export from modules on your current project or dependencies.
+
+With one prefix argument, import exported symbols.
+With two prefix arguments, import all exports as a symbol."
+  (interactive "p")
+  (js-import-from-path (js-import-select-path "devDependencies") arg))
 
 (provide 'js-import)
 ;;; js-import.el ends here
