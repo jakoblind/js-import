@@ -16,23 +16,22 @@ Use [ido-ubiquitous](https://github.com/DarwinAwardWinner/ido-ubiquitous) to ena
 
 ## Usage
 
-The main command is
+The main commands are:
 
-```
-M-x js-import
-```
+` M-x js-import ` which allows selecting js modules from current project and package.json "dependencies".
 
-Select a dependency from the list in the minibuffer. Then you need to enter a name of the import:
-- Enter a comma separated list of member names, for example `a, b` generates `import { a, b } from "xx"`;
-- Enter a name for the imported object, for example `a` generates `import a from "xx"`;
-- Press enter to use default which is either the symbol at point, or the name of the dependency to be imported
+` M-x js-import-dev ` which allows selecting js modules from current project and package.json "devDependencies".
+
+Once called, select a dependency MODULE from the completing list presented and, depending on the number of prefix arguments (`C-u`) used to invoke the command:
+
+- With no prefix argument, enter a NAME to be imported as the default export of the module, generating: ` import NAME from 'MODULE' `. If other exports from module are already imported, the NAME will be prepended to the existent import line. If the default module export has already been imported as another name, this will generate a new import with the chosen NAME.
+
+- With one prefix argument, enter comma separated list of NAMES to import from module, generating: ` import { NAMES } from 'MODULE' `. If the module is already imported, the NAMES will be appended to the existent import line.
+
+- With two prefix arguments, enter a NAME to import all exports from module, generating: ` import * as NAME from 'MODULE' `.
+
+The default NAME to import is suggested to be either the symbol at point or the module name.
 
 An import statement will be inserted after the other import statements in the file, or at top of the file if no import statements already exists.
-
-If you need a package defined in `devDependecies` section you can use:
-
-```
-M-x js-import-dev
-```
 
 [Blogpost](https://jakoblind.github.io/emacs/javascript/2016/10/16/automatically-import-js-files-from-you-project.html)
