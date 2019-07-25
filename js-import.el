@@ -51,8 +51,8 @@
         (hash-table-keys dependencies-hash)))))
 
 (defun js-import-is-js-file (filename)
-  "Check if FILENAME ends with either .js or .jsx."
-  (or (string-suffix-p ".js" filename t) (string-suffix-p ".jsx" filename t)))
+  "Check if FILENAME ends with .js, .jsx, .ts or .tsx."
+  (member (file-name-extension filename) '("js" "jsx" "ts" "tsx")))
 
 (defun js-import-from-path (path arg)
   "Import symbols from module."
