@@ -38,6 +38,12 @@
   :type '(choice (const :tag "Double" "\"")
                  (const :tag "Single" "'")))
 
+(defcustom js-import-style "relative"
+  "Import style used."
+  :group 'js-import
+  :type '(choice (const :tag "from-project-root" "project-root")
+                 (const :tag "relative" "relative")))
+
 (defun js-import-get-package-json ()
   "Return the path to package.json from projectile-project-root."
   (concat (projectile-project-root) "package.json"))
@@ -99,18 +105,21 @@
 (defun js-import-select-path (section)
   "Select path from modules in project or package.json SECTION."
   (let ((path (completing-read
-			   "Select module: "
-			   (append
-				(js-import-get-project-dependencies (js-import-get-package-json) section)
-				(-filter 'js-import-is-js-file (projectile-current-project-files))))))
-	(when (js-import-is-js-file path)
-	  (setq path (f-relative
-				  (concat (projectile-project-root) (f-no-ext path))
-				  default-directory))
-	  (setq path (replace-regexp-in-string "/index$" "" path))
-	  (when (not (string-prefix-p "." path))
-		(setq path (concat "./" path))))
-	path))
+	       "Select module: "
+	       (append
+		(js-import-get-project-dependencies (js-import-get-package-json) section)
+		(-filter 'js-import-is-js-file (projectile-current-project-files))))))
+    (when (js-import-is-js-file path)
+      (if (equal js-import-style "relative")
+ 	  (setq path (f-relative
+ 		      (concat (projectile-project-root) (f-no-ext path))
+ 		      default-directory))
+	(setq path (f-no-ext path)))
+      (setq path (replace-regexp-in-string "/index$" "" path))
+      (when (equal js-import-style "relative")
+ 	(when (not (string-prefix-p "." path))
+	  (setq path (concat "./" path)))))
+    path))
 
 ;;;###autoload
 (defun js-import (arg)
