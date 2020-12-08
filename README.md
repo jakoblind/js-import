@@ -38,7 +38,7 @@ An import statement will be inserted after the other import statements in the fi
 
 ## Customization
 
-You can use M-x customize-variable to modify generated import statements.
+You can use `M-x customize-variable` to modify generated import statements.
 
 To choose the quoting style, set js-import-quote either to `"` or to `'`.
 
