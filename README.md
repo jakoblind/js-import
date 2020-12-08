@@ -35,3 +35,12 @@ The default NAME to import is suggested to be either the symbol at point or the 
 An import statement will be inserted after the other import statements in the file, or at top of the file if no import statements already exists.
 
 [Blogpost](https://jakoblind.github.io/emacs/javascript/2016/10/16/automatically-import-js-files-from-you-project.html)
+
+## Customization
+
+You can use M-x customize-variable to modify generated import statements.
+
+To choose the quoting style, set js-import-quote either to `"` or to `'`.
+
+To switch between relative imports (`../foo`) and absolute imports from project root (`A/B/foo`), set js-import-style to either "relative" or "project-root".
+
