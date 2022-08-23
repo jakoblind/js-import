@@ -96,32 +96,42 @@ nil     Omit if current file has a .[tj]sx? extension and
 						 nil nil proposed-symbol))
 					 (symbols (string-trim read-symbols)))
 			(goto-char (point-min))
-			(while (re-search-forward "\\(^\\| +\\)import[ \t\n]+" nil t)
+			(while (re-search-forward "^import[ \t\n]+" nil t)
 				(re-search-forward "['\"]" nil t 2)
 				(forward-line 1))
 			(if (eq arg 16)
-          (insert "import * as " symbols
-                  " from " js-import-quote path js-import-quote ";\n")
-        (if (not (re-search-backward (concat "from +['\"]" path "['\"]") nil t))
-            (insert "import "
-                    (pcase arg
-                      (1 symbols)
-                      (4 (concat "{ " symbols " }") ))
-                    " from " js-import-quote path js-import-quote ";\n")
-          (if (eq arg 4)
-              (if (not (search-backward "}" (save-excursion (search-backward "import")) t))
-									(insert ", { " symbols " } " )
-								(skip-chars-backward " \t\n")
-								(insert ", " symbols " "))
-						(search-backward "import")
-						(if (looking-at-p "import\\(\n\\|\\s-\\)+\\w") ;; default symbol already imported
-								(progn
-									(open-line 1)
-									(insert "import "
-													symbols
-													" from " js-import-quote path js-import-quote ";"))
-							(forward-word)
-							(insert " " symbols ","))))))))
+					(insert "import * as " symbols " from " js-import-quote path js-import-quote ";\n")
+        (if (re-search-backward (concat "from +['\"]" path "['\"]") nil t)
+						;; module is already imported
+						(if (eq arg 4)
+								(let ((bound (save-excursion (re-search-backward "\\_<import\\_>"))))
+									(if (not (search-backward "}" bound t))
+											(insert ", { " symbols " } " )
+										(let ((is-multiline (< (save-excursion (search-backward "{" bound t))
+																					 (line-beginning-position))))
+											;; module already has an { import, list }
+											(skip-chars-backward " \t\n")
+											(if (not (looking-back ",\\s-*" bound))
+													(insert "," (if is-multiline "\n" "") " " symbols " ")
+												;; trailling comma
+												(insert (if is-multiline "\n" "") symbols ",")
+												(when is-multiline
+													(funcall indent-line-function))))))
+							(search-backward "import")
+							(if (looking-at-p "import\\(\n\\|\\s-\\)+\\w") ;; default symbol already imported
+									(progn
+										(open-line 1)
+										(insert "import "
+														symbols
+														" from " js-import-quote path js-import-quote ";"))
+								(forward-word)
+								(insert " " symbols ",")))
+					;; module is not imported
+					(insert "import "
+                  (pcase arg
+                    (1 symbols)
+                    (4 (concat "{ " symbols " }") ))
+                  " from " js-import-quote path js-import-quote ";\n"))))))
 
 (defun js-import--normalize-typescript-ext (path)
 	(if-let ((ext (js-import--js-file-p path)))
