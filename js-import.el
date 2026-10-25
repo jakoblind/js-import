@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016  Jakob Lind
 
-;; Author: Jakob Lind <399339+jakoblind@users.noreply.github.com>
+;; Author: Jakob Lind
 ;; URL: https://github.com/jakoblind/js-import
 ;; Package-Requires: ((emacs "24.4") (f "0.19.0") (projectile "0.14.0") (dash "2.13.0"))
 ;; Version: 1.0
