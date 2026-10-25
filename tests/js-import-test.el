@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016  Jakob Lind
 
-;; Author: Jakob Lind <karl.jakob.lind@gmail.com>
+;; Author: Jakob Lind
 ;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
